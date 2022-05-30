@@ -41,6 +41,7 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 [ -f "${HOME}/.local/share/zsh/functions" ] && source "${HOME}/.local/share/zsh/functions"
 
 # asdf configuration
+export ASDF_DATA_DIR=~/.asdf
 . $HOME/.asdf/asdf.sh
 # append completions to fpath
 fpath=(${ASDF_DIR}/completions $fpath)
