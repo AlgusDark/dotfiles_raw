@@ -78,6 +78,8 @@ bindkey "\e[3~" delete-char
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
+bindkey -s "^l" "clear\n"
+
 # auto notify options
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve")
 
