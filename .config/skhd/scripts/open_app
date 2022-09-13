@@ -1,0 +1,34 @@
+#!/bin/zsh
+
+while [[ "$#" -gt 0 ]]
+  do
+    case $1 in
+      -a|--app)
+        name="$2"
+        ;;
+      -l|--alias)
+        alias="$2"
+        ;;
+    esac
+    shift
+  done
+
+pos="${pos:-1}"
+alias=${alias:-$name}
+
+data=()
+while read -r value
+do
+  data+=("$value")
+done < <(yabai -m query --windows --window | jq -r '.app,.id,.space')
+
+app=${data[1]}
+id=${data[2]}
+
+if [ "$app" = "$alias" ]
+then
+  focus=$(yabai -m query --windows | jq --arg id "$id" --arg app "$app" --arg pos "$pos" 'map(select(.app==$app).id) | sort | .[(index($id|tonumber)+($pos|tonumber))%length]')
+  yabai -m window --focus "$focus"
+else
+  open -a "$name"
+fi

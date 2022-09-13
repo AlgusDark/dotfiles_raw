@@ -1,0 +1,29 @@
+#!/bin/zsh
+
+# reload yabai
+config < r : launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai" ; skhd -k "escape"
+config < h : hs -c "hs.reload()" ; skhd -k "escape"
+
+# create space and follow
+config < n : yabai -m space --create ; yabai -m space --focus "$(yabai -m query --displays --display | jq '.spaces | last')" ; skhd -k "escape"
+# destroy space
+config < x : yabai -m space --destroy ; skhd -k "escape"
+
+# set insertion point in focused container
+config < j : yabai -m window --insert west    
+config < k : yabai -m window --insert south   
+config < i : yabai -m window --insert north   
+config < l : yabai -m window --insert east    
+config < 0x2B : yabai -m window --insert stack # comma
+
+# Be able to select window
+config < lalt - j : yabai -m window --focus west || yabai -m window --focus last
+config < lalt - k : yabai -m window --focus south || yabai -m window --focus north
+config < lalt - i : yabai -m window --focus north || yabai -m window --focus south
+config < lalt - l : yabai -m window --focus east || yabai -m window --focus first
+
+# Re-insert a window to a given window
+config < alt + shift - j :  yabai -m window --warp west
+config < alt + shift - k :  yabai -m window --warp south
+config < alt + shift - i :  yabai -m window --warp north
+config < alt + shift - l :  yabai -m window --warp east

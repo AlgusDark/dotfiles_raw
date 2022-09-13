@@ -5,85 +5,38 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-ZPLUGINDIR=${ZPLUGINDIR:-${ZDOTDIR:-$HOME/.local/share/zsh}/plugins}
+if [ -f $ASDF_DATA_DIR/asdf.sh ]; then
+  source $ASDF_DATA_DIR/asdf.sh
+  fpath=($fpath ${ASDF_DIR}/completions)
 
-# get zsh_unplugged and store it with your other plugins
-if [[ ! -d $ZPLUGINDIR/zsh_unplugged ]]; then
-  git clone --quiet https://github.com/mattmc3/zsh_unplugged $ZPLUGINDIR/zsh_unplugged
+  if [ -f $ASDF_PLUGINS/java/set-java-home.zsh ]; then
+    source $ASDF_PLUGINS/java/set-java-home.zsh
+  fi
 fi
-source $ZPLUGINDIR/zsh_unplugged/zsh_unplugged.plugin.zsh
 
-# make list of the Zsh plugins you use
-repos=(
-  romkatv/powerlevel10k
-  zsh-users/zsh-completions
-  zsh-users/zsh-syntax-highlighting
-  zsh-users/zsh-history-substring-search
-  zsh-users/zsh-autosuggestions
-  MichaelAquilina/zsh-auto-notify
-  MichaelAquilina/zsh-you-should-use
-)
+fpath=($fpath /usr/local/sbin)
 
-# load plugins
-plugin-load $repos
+if [ -f ~/.bash_profile ]; then
+ source ~/.bash_profile
+fi
 
-# History
-setopt HIST_IGNORE_ALL_DUPS
-HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
-
-ZSH_AUTOSUGGEST_STRATEGY=(history completion)
-
-# aliases
-[ -f "${HOME}/.local/share/zsh/aliases" ] && source "${HOME}/.local/share/zsh/aliases"
-# functions
-[ -f "${HOME}/.local/share/zsh/functions" ] && source "${HOME}/.local/share/zsh/functions"
-
-# asdf configuration
-export ASDF_DATA_DIR=~/.asdf
-. $HOME/.asdf/asdf.sh
-# append completions to fpath
-fpath=(${ASDF_DIR}/completions $fpath)
-
-# options
-unsetopt menu_complete
-unsetopt flowcontrol
-
-setopt autocd notify
-setopt prompt_subst
-setopt always_to_end
-setopt append_history
-setopt auto_menu
-setopt complete_in_word
-setopt extended_history
-setopt hist_expire_dups_first
-setopt hist_ignore_dups
-setopt hist_ignore_space
-setopt hist_verify
-setopt inc_append_history
-setopt share_history
-
-zstyle :compinstall filename '/home/algus/.zshrc'
-autoload -Uz compinit; compinit
-
-# completions
-[ -f "${HOME}/.local/share/zsh/completion" ] && source "${HOME}/.local/share/zsh/completion"
-
-bindkey '^a' beginning-of-line
-bindkey '^e' end-of-line
-bindkey "\e[3~" delete-char 
-
-# history substring search options
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-
-bindkey -s "^l" "clear\n"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/unplugged"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/aliases"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/functions"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/completion"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/history"
+source "${XDG_CONFIG_HOME:-$HOME/.config}/shell/bindkeys.zsh"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 # auto notify options
 AUTO_NOTIFY_IGNORE+=("lf" "hugo serve")
 
-. ~/.asdf/plugins/java/set-java-home.zsh
+# To customize prompt, run `p10k configure` or edit $XDG_CONFIG_HOME/.p10k.zsh.
+[[ ! -f "$XDG_CONFIG_HOME/.p10k.zsh" ]] || source "$XDG_CONFIG_HOME/.p10k.zsh"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+autoload -Uz compinit
+if [ $(date +'%j') != $(/usr/bin/stat -f '%Sm' -t '%j' ${ZDOTDIR}/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi

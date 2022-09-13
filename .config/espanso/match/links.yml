@@ -1,0 +1,11 @@
+parent: default
+
+matches:
+  - trigger: ";tweet"
+    replace: "https://tw.algus.ninja"
+  - trigger: ";git"
+    replace: "https://git.algus.ninja"
+  - trigger: ";blog"
+    replace: "https://algus.ninja"
+  - trigger: ";linkedin"
+    replace: "https://in.algus.ninja"

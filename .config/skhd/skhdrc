@@ -1,0 +1,110 @@
+#!/bin/zsh
+
+# https://developer.mozilla.org/en-US/docs/Web/API/UI_Events/Keyboard_event_code_values
+
+######################################
+# Modals declarations
+######################################
+:: default     : yabai -m config active_window_border_color 0xff86C0D1 ; yabai -m config normal_window_opacity 0.8  ; hs -c "Modal:close()"
+:: config    @ : yabai -m config active_window_border_color 0xffB58DAE ; yabai -m config normal_window_opacity 0.45 ; hs -c "Modal:show('config_mode')" # Floating window layout
+:: resize    @ : yabai -m config active_window_border_color 0xff98c379 ; yabai -m config normal_window_opacity 0.45 ; hs -c "Modal:show('resize_mode')" # Resize window operations
+:: open      @ : yabai -m config active_window_border_color 0xaad75f5f ; hs -c "Modal:show('open_mode')" # Open new instance of app
+:: leader    @ : yabai -m config active_window_border_color 0xaa5e81ac ; yabai -m config normal_window_opacity 0.8  ; hs -c "Modal:show('leader_mode', true)"
+
+######################################
+# Shortcuts for modes
+######################################
+
+default                       < hyper - o     ; open
+default                       < hyper - c     ; config
+default                       < hyper - r     ; resize
+default                       < hyper - space ; leader
+
+leader                        < r ; resize
+leader                        < o ; open
+leader                        < c ; config
+
+open, config, resize, leader  < escape        ; default
+open, config, resize          < backspace     ; leader
+open, config, resize          < space         : hs -c "Modal:toggle()"
+
+######################################
+# Load configs
+######################################
+
+.load "open_mode"
+.load "resize_mode"
+.load "config_mode"
+.load "spaces"
+
+######################################
+# Navigation
+######################################
+lalt - j : yabai -m window --focus west || yabai -m window --focus last
+lalt - k : yabai -m window --focus south || yabai -m window --focus north
+lalt - i : yabai -m window --focus north || yabai -m window --focus south
+lalt - l : yabai -m window --focus east || yabai -m window --focus first
+lalt - m : yabai -m window --focus recent
+
+# Cycle same focused app trhough all spaces
+lalt - u : "$SKHD_SCRIPTS_DIR/cycle_app" --focus prev
+lalt - o : "$SKHD_SCRIPTS_DIR/cycle_app" --focus next
+
+# Cycle through stacked windows
+lalt - 0x2B : yabai -m window --focus stack.prev || yabai -m window --focus stack.last # comma
+lalt - 0x2F : yabai -m window --focus stack.next || yabai -m window --focus stack.first # period
+
+# Float Navigation
+lalt - w : "$SKHD_SCRIPTS_DIR/cycle_float" --focus prev
+lalt - e : "$SKHD_SCRIPTS_DIR/cycle_float" --focus next
+
+######################################
+# Swap Position with given window
+######################################
+shift + lalt - j : yabai -m window --swap west || yabai -m window --swap last
+shift + lalt - k : yabai -m window --swap south || yabai -m window --swap north
+shift + lalt - i : yabai -m window --swap north || yabai -m window --swap south
+shift + lalt - l : yabai -m window --swap east || yabai -m window --swap first
+
+# balance size of windows
+shift + lalt - 0 : yabai -m space --balance
+# Zoom focused window
+shift + lalt - z : yabai -m window --toggle zoom-fullscreen
+
+######################################
+# Float window operations
+######################################
+# <rows>:<cols>:<start-x>:<start-y>:<width>:<height>
+# Float a window
+shift + lalt - f : yabai -m window --toggle float
+# (Float and) center window 
+# yabai -m window --toggle float && yabai -m window --grid 1:6:1:1:4:1 &> /dev/null;
+shift + lalt - c : floating="$(yabai -m query --windows --window | jq '."is-floating"')"; \
+  if [ "$floating" = false ]; then yabai -m window --toggle float; fi; \
+  yabai -m window --grid 1:6:1:1:4:1;
+# make floating window fill screen
+shift + lalt - d : yabai -m window --grid 1:1:0:0:1:1
+# make floating window fill left-half of screen
+shift + lalt - x : yabai -m window --grid 1:2:0:0:1:1
+# make floating window fill right-half of screen
+shift + lalt - v : yabai -m window --grid 1:2:1:0:1:1
+# toggle stikcky, float and resize to picture-in-picture
+shift + lalt - p : yabai -m window --toggle sticky --toggle topmost; yabai -m window --grid 2:3:3:0:1:1
+# toggle sticky
+shift + lalt - s : yabai -m window --toggle sticky ; skhd -k "escape"
+# # toggle topmost
+# shift + lalt - t : yabai -m window --toggle topmost
+
+# # cycle forwards
+# yabai -m query --spaces --space \
+#   | jq -re ".index" \
+#   | xargs -I{} yabai -m query --windows --space {} \
+#   | jq -sre "add | map(select(.minimized != 1)) | sort_by(.display, .frame.y, .frame.x, .id) | reverse | nth(index(map(select(.focused == 1))) - 1).id" \
+#   | xargs -I{} yabai -m window --focus {}
+
+# # cycle backwards
+# yabai -m query --spaces --space \
+#   | jq -re ".index" \
+#   | xargs -I{} yabai -m query --windows --space {} \
+#   | jq -sre "add | map(select(.minimized != 1)) | sort_by(.display, .frame.y, .frame.x, .id) | nth(index(map(select(.focused == 1))) - 1).id" \
+#   | xargs -I{} yabai -m window --focus {}

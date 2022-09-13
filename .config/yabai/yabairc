@@ -1,0 +1,164 @@
+#!/bin/zsh
+
+# necessary to load scripting-addition during startup on macOS
+# *yabai --load-sa* is configured to run through sudo without a password
+sudo yabai --load-sa
+yabai -m signal --add event=dock_did_restart action="sudo yabai --load-sa"
+
+# Global Settings
+# Enable output of debug information to stdout. [<BOOL_SEL>]
+# yabai -m config debug_output on
+# When focusing the window, put the mouse at its center [<BOOL_SEL>]
+yabai -m config mouse_follows_focus          on
+# Automatically focus the window under the mouse. [autofocus|autoraise|off]
+yabai -m config focus_follows_mouse          autoraise
+# Specify whether managed windows should become the first_child or second_child leaf-node. [first_child|second_child]
+yabai -m config window_placement             second_child
+# Make floating windows stay on top.  [<BOOL_SEL>]
+yabai -m config window_topmost               off
+# Draw shadow for windows. [<BOOL_SEL>|float]
+yabai -m config window_shadow                float
+# Enable opacity for windows. [<BOOL_SEL>]
+yabai -m config window_opacity               on  # https://github.com/koekeishiya/yabai/issues/277
+# Duration of transition between active / normal opacity.  [<floating point number>]
+yabai -m config window_opacity_duration      0.0  # https://github.com/koekeishiya/yabai/issues/277
+# Opacity of the focused window. [<FLOAT_SEL>]
+yabai -m config active_window_opacity        1.0
+# Opacity of an unfocused window. [<FLOAT_SEL>]
+yabai -m config normal_window_opacity        0.8
+# Draw border for windows. [<BOOL_SEL>]
+yabai -m config window_border                on
+# Width of window borders. If the given width is an odd number, it will be incremented by 1. [<even integer number>]
+yabai -m config window_border_width          6
+# Color of the border of the focused window. [0xAARRGGBB]
+yabai -m config active_window_border_color   0xff86C0D1
+# Color of the border of an unfocused window. [0xAARRGGBB]
+yabai -m config normal_window_border_color   0xff4C566B
+# Color of the window --insert message selection. [0xAARRGGBB]
+yabai -m config insert_feedback_color        0xaad75f5f
+# Default split ratio [<FLOAT_SEL>]
+yabai -m config split_ratio                  0.50
+# Balance the window tree upon change, so that all windows occupy the same area. [<BOOL_SEL>]
+yabai -m config auto_balance                 on
+# Keyboard modifier used for moving and resizing windows. [cmd|alt|shift|ctrl|fn]
+yabai -m config mouse_modifier               ctrl
+# Action performed when pressing mouse_modifier + button1. [move|resize]
+yabai -m config mouse_action1                move
+# Action performed when pressing mouse_modifier + button2. [move|resize]
+yabai -m config mouse_action2                resize
+# Action performed when a bsp-managed window is dropped in the center of some other bsp-managed window. swap|stack]
+yabai -m config mouse_drop_action            swap
+
+# Space Settings
+# Padding added at the upper side of the selected space. [<integer number>]
+yabai -m config top_padding                  5
+# Padding added at the lower side of the selected space. [<integer number>]
+yabai -m config bottom_padding               5
+# Padding added at the left side of the selected space.  [<integer number>]
+yabai -m config left_padding                 5
+# Padding added at the right side of the selected space. [<integer number>]
+yabai -m config right_padding                5
+# Size of the gap that separates windows for the selected space. [<integer number>]
+yabai -m config window_gap                   5
+# Set the layout of the selected space. [bsp|stack|float]
+yabai -m config layout                       bsp
+
+# Space labels
+yabai -m space 1 --label wolt
+yabai -m space 2 --label doordash
+yabai -m space 3 --label personal
+yabai -m space 4 --label media
+
+# specific space settings
+# yabai -m config --space mail  layout        stack
+
+# Rules
+### Spaces
+yabai -m rule --add app="^Brave Browser$" space=^wolt
+yabai -m rule --add app="^Google Chrome$" space=^doordash
+yabai -m rule --add app="^LINE$" space=^personal
+yabai -m rule --add app="^Telegram$" space=^personal
+yabai -m rule --add app="^Google Chrome Canary$" space=^personal
+yabai -m rule --add app="^YouTube Music$" space=^media
+
+# Per App
+centered_apps="(Finder|Docker Desktop|Meeter|Disk Utility|Activity Monitor|Managed Software Center)"
+yabai -m rule --add app="^${centered_apps}$" title="^$" layer=above manage=off border=off
+yabai -m rule --add app="^${centered_apps}$" title!="^$" layer=above manage=off grid=4:4:1:1:2:2 border=off
+
+centered_fullheight="(Spark)"
+yabai -m rule --add app="^${centered_fullheight}$" layer=above manage=off grid=1:6:1:1:4:1 border=off
+
+system_apps="(Archive Utility|System Preferences|System Information|Calculator|Vimac|The Unarchiver|Hidden Bar|choose|JetBrains Toolbox|Hammerspoon|Raycast|Problem Reporter|Espanso|KeyCastr)"
+yabai -m rule --add app="^${system_apps}$" sticky=on layer=above manage=off border=off
+
+yabai -m rule --add app="^zoom.us$" title="Zoom Meeting" manage=off grid=1:6:1:1:4:1 border=off
+
+# JetBrains principal app has a special title
+# while children popups are normal windows
+JetBrains="(IntelliJ IDEA|PyCharm)"
+yabai -m rule --add app="^${JetBrains}$" manage=off
+yabai -m rule --add app="^${JetBrains}$" title="( – )" manage=on
+
+# Line principal app uses LINE as title
+# while stickers use empty string and everytying else uses a title
+yabai -m rule --add app="^LINE$" title!="^LINE$" manage=off layer=above
+yabai -m rule --add app="^LINE$" title="^$" manage=off layer=above
+
+# monitor error log
+# tail -f /usr/local/var/log/yabai/yabai.err.log 
+# monitor output log
+# tail -f /usr/local/var/log/yabai/yabai.out.log
+# relaunch yabai
+# launchctl kickstart -k "gui/${UID}/homebrew.mxcl.yabai"
+
+# signals
+yabai -m signal --add app!="(Raycast|choose|Hammerspoon)" event=window_destroyed active=yes action="yabai -m query --windows --window &> /dev/null || yabai -m window --focus mouse &> /dev/null || yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id) &> /dev/null"
+# yabai -m signal --add event=window_created action="yabai -m query --windows --window &> /dev/null || yabai -m window --focus mouse &> /dev/null || yabai -m window --focus \$(yabai -m query --windows --space | jq .[0].id) &> /dev/null"
+# yabai -m signal --add app!="(Raycast|choose|Slack|Hammerspoon)" event=window_created action="yabai -m space --focus $(yabai -m query --windows --window $YABAI_WINDOW_ID | jq .space)"
+# yabai -m signal --add app="Slack" event=application_activated action="yabai -m space --focus $(yabai -m query --spaces --space | jq '.index')"
+
+# Automatic stack
+# https://github.com/koekeishiya/yabai/issues/674
+# yabai -m signal --add event=window_focused action='yabai -m window $YABAI_WINDOW_ID --insert stack'
+# yabai -m signal --add event=application_front_switched action='yabai -m window --insert stack'
+# -- fix? --
+# yabai -m signal --add event=application_terminated action='yabai -m window --insert stack'
+# yabai -m signal --add event=window_destroyed action='yabai -m window --insert stack'
+
+# Set subsequent windows of the same application to automatically tile
+# https://github.com/koekeishiya/yabai/issues/1168
+# yabai -m signal --add event=window_created action="~/.config/yabai/scripts/tile_new_window.sh"
+# PID=$(yabai -m query --windows --window $YABAI_WINDOW_ID | jq '.pid')
+# FLOAT=$(yabai -m query --windows | jq 'map(select(.pid == '$PID') | select(.id != '$YABAI_WINDOW_ID')) | .[0] | ."is-floating"')
+# if [ "$FLOAT" = false ]
+# then
+#     yabai -m window $YABAI_WINDOW_ID --toggle float
+# fi
+
+# yabai -m query --windows | jq 'map(select(.app=="PyCharm")) | min_by(.id).id as $parent  | map(if .id!=$parent then .id else empty end)'
+
+# applications="(Calendar|Mail|Reminders|Notes|Microsoft Outlook|Discord|Messages|Slack|Firefox|Chrome|Code|Microsoft Word|Preview|Terminal|iTerm2|QuickTime|Player|Spotify|Music)"
+# NOTE: you need to set the settings for the applications in the 
+#       list first, or else they don't apply properly and you can end up with
+#       some weird border/float/window behaviours
+
+# everything listed gets sent to below layer to prevent 
+# them from covering floating applications/popup windows
+# yabai -m rule --add app="^${applications}$"    manage=on layer=below
+
+# then any apps that aren't listed above get put to
+# float e.g. system preferences, colour meter
+# yabai -m rule --add app!="^${applications}$"   manage=off border=off
+
+# # Rule with manage off all windows (This will make it float)
+# yabai -m rule --add app=".*" label=default_float layer=below border=off
+# # # Signal that manage on if can be resized 
+# yabai -m signal --add event=window_created label=apply_tiling action="id=$(yabai -m query --windows --window $YABAI_WINDOW_ID | jq -e '."can-resize"'); \
+# echo \"hello world $YABAI_WINDOW_ID\""
+# yabai -m window $YABAI_WINDOW_ID --toggle float
+
+# yabai -m query --windows | jq -e 'map(select(.space==1)) | sort_by(.frame.x, .frame.y)'
+
+# yabai -m signal --add event=window_created action="bash $YABAI_SCRIPTS_DIR/center_children.sh"
+# yabai -m signal --add event=space_changed action='echo "space changed"'

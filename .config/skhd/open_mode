@@ -1,0 +1,32 @@
+#!/bin/zsh
+
+######################################
+# Open Mode
+######################################
+# Launch or Focus App
+open < a : skhd -k "escape" ; open -a Calendar
+open < b : skhd -k "escape" ; open -a "Brave Browser"
+open < c : skhd -k "escape" ; open -a "Visual Studio Code"
+open < e : skhd -k "escape" ; open -a Finder
+open < g : skhd -k "escape" ; open -a "Google Chrome"
+open < h : skhd -k "escape" ; open -a "Google Chrome Canary"
+open < i : skhd -k "escape" ; open -a "IntelliJ IDEA CE"
+open < l : skhd -k "escape" ; open -a LINE
+open < m : skhd -k "escape" ; open -a Spark
+open < o : skhd -k "escape" ; open -a Obsidian
+open < s : skhd -k "escape" ; open -a Slack
+open < t : skhd -k "escape" ; open -a Telegram
+open < w : skhd -k "escape" ; open -a WezTerm
+open < y : skhd -k "escape" ; open -a "Youtube Music"
+open < z : skhd -k "escape" ; open -a zoom.us
+
+# Open a new instance of the application
+open < shift - b : skhd -k "escape" ; open -na "Brave Browser"
+open < shift - c : skhd -k "escape" ; code -n "$*"
+open < shift - g : skhd -k "escape" ; open -na "Google Chrome"
+open < shift - h : skhd -k "escape" ; open -na "Google Chrome Canary"
+open < shift - i : skhd -k "escape" ; open -na "IntelliJ IDEA CE"
+open < shift - w : skhd -k "escape" ; wezterm cli spawn --new-window || open -a WezTerm
+
+# TODO: Would be really cool to have a third mode that could open [choose](https://github.com/chipsenkbeil/choose)
+# or similar to open the written path

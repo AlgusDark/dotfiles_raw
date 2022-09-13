@@ -1,6 +1,6 @@
-#!/bin/sh
+#!/bin/zsh
 
-alias reload="source ~/.zshrc"
+alias reload="source $ZDOTDIR/.zshrc"
 
 # settings for common commands
 alias cp="cp -iv"
@@ -19,10 +19,12 @@ alias la='ls -A'
 alias g="git"
 alias gs="git status"
 alias gc="git commit"
-alias ga="git add"
+alias gaa="git add"
+alias gaa="git add -A"
 alias gpl="git pull"
 alias gpom="git pull origin master"
 alias gpu="git push"
+alias gpuf="git push --force"
 alias gpuom="git push origin master"
 alias gd="git diff"
 alias gch="git checkout"

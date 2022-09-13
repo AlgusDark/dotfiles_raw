@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 zstyle ':completion:*' use-cache on
 zstyle ':completion:*' cache-path "${XDG_CACHE_HOME:-$HOME}/.zsh/.zcompcache"
 
@@ -23,14 +25,15 @@ zstyle ':completion:*' group-name ''
 zstyle ':completion:*:*:-command-:*:*' group-order aliases builtins functions commands
 zstyle ':completion:*:default' list-colors ${(s.:.)ZLS_COLORS}
 
-# Auto complete with case insenstivity
 zstyle ':completion:*' matcher-list '' 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
 zstyle ':completion:*' keep-prefix true
-zstyle ':completion:*' menu select
 
 # zstyle ':completion:*' add-space true
 # zstyle ':completion:*' completer _expand _complete _match _prefix _approximate _list
+# zstyle ':completion:*' menu select=1
+# 
 # zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}' 'r:|[._-]=** r:|=**' 'l:|=** r:|=**'
+# zstyle ':completion:*' menu select
 # zstyle ':completion:*:approximate:*' max-errors 'reply=( $(( ($#PREFIX+$#SUFFIX)/3 )) numeric )'
 # zstyle ':completion:*' group 1
 # zstyle ':completion:*' format '%B---- %d%b'

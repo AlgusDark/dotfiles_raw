@@ -1,0 +1,12 @@
+parent: default
+
+matches:
+  - trigger: ";shrug"
+    replace: "¯\\_(ツ)_/¯"
+  - trigger: ";pump"
+    replace: "( •̀ω•́ )σ"
+  - trigger: ";joy"
+    replace: "ಥ‿ಥ"
+  - trigger: ";happy"
+    replace: "ᕕ(ᐛ)ᕗ"  
+    
